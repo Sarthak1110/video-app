@@ -1,14 +1,28 @@
-import React from 'react'
+import React, { useState } from 'react'
 import "../styles/modern.css"
 import { Link, useNavigate } from 'react-router-dom'
-import { Button, IconButton } from '@mui/material'
+import { Button, IconButton, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Card, CardContent, Typography } from '@mui/material'
 import VideoCallIcon from '@mui/icons-material/VideoCall'
 import GroupIcon from '@mui/icons-material/Group'
 import SecurityIcon from '@mui/icons-material/Security'
 import SpeedIcon from '@mui/icons-material/Speed'
+import AddIcon from '@mui/icons-material/Add'
 
 export default function LandingPage() {
     const router = useNavigate();
+    const [guestDialogOpen, setGuestDialogOpen] = useState(false);
+    const [meetingCode, setMeetingCode] = useState("");
+
+    const handleGuestJoin = () => {
+        if (!meetingCode.trim()) return;
+        router(`/${meetingCode}`);
+        setGuestDialogOpen(false);
+    }
+
+    const handleCreateGuestMeeting = () => {
+        const randomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        setMeetingCode(randomCode);
+    }
 
     const features = [
         {
@@ -62,7 +76,7 @@ export default function LandingPage() {
                 <div className="nav-links">
                     <Button 
                         className="btn-modern btn-secondary"
-                        onClick={() => router("/aljk23")}
+                        onClick={() => setGuestDialogOpen(true)}
                         sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
                     >
                         Join as Guest
@@ -131,7 +145,7 @@ export default function LandingPage() {
                                 Get Started Free
                             </Button>
                             <Button
-                                onClick={() => router("/aljk23")}
+                                onClick={() => setGuestDialogOpen(true)}
                                 variant="outlined"
                                 size="large"
                                 sx={{
@@ -236,6 +250,127 @@ export default function LandingPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Guest Join Dialog */}
+            <Dialog 
+                open={guestDialogOpen} 
+                onClose={() => setGuestDialogOpen(false)}
+                maxWidth="sm"
+                fullWidth
+                PaperProps={{
+                    sx: {
+                        borderRadius: '20px',
+                        background: 'rgba(255,255,255,0.95)',
+                        backdropFilter: 'blur(20px)'
+                    }
+                }}
+            >
+                <DialogTitle sx={{ 
+                    textAlign: 'center', 
+                    fontWeight: 700, 
+                    fontSize: '1.5rem',
+                    color: '#2d3748',
+                    paddingBottom: '8px'
+                }}>
+                    Join Meeting as Guest
+                </DialogTitle>
+                <DialogContent sx={{ padding: '20px 24px' }}>
+                    <Typography variant="body2" sx={{ 
+                        color: '#718096', 
+                        textAlign: 'center', 
+                        marginBottom: '24px' 
+                    }}>
+                        Enter a meeting code to join or create a new meeting
+                    </Typography>
+                    
+                    <TextField 
+                        value={meetingCode}
+                        onChange={e => setMeetingCode(e.target.value.toUpperCase())}
+                        label="Meeting Code" 
+                        variant="outlined"
+                        fullWidth
+                        placeholder="Enter 6-digit code"
+                        sx={{
+                            marginBottom: '20px',
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                                fontSize: '16px',
+                                '&:hover fieldset': {
+                                    borderColor: '#667eea',
+                                },
+                                '&.Mui-focused fieldset': {
+                                    borderColor: '#667eea',
+                                }
+                            }
+                        }}
+                    />
+                    
+                    <div style={{ textAlign: 'center', margin: '16px 0' }}>
+                        <Typography variant="body2" sx={{ color: '#718096' }}>
+                            or
+                        </Typography>
+                    </div>
+                    
+                    <Button 
+                        onClick={handleCreateGuestMeeting}
+                        variant="outlined"
+                        fullWidth
+                        startIcon={<AddIcon />}
+                        sx={{
+                            borderColor: '#667eea',
+                            color: '#667eea',
+                            padding: '12px 24px',
+                            borderRadius: '12px',
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            textTransform: 'none',
+                            '&:hover': {
+                                borderColor: '#667eea',
+                                background: 'rgba(102, 126, 234, 0.1)'
+                            }
+                        }}
+                    >
+                        Generate New Meeting Code
+                    </Button>
+                </DialogContent>
+                <DialogActions sx={{ padding: '0 24px 24px 24px', gap: '12px' }}>
+                    <Button 
+                        onClick={() => setGuestDialogOpen(false)}
+                        sx={{ 
+                            color: '#718096',
+                            textTransform: 'none',
+                            fontWeight: 600
+                        }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button 
+                        onClick={handleGuestJoin}
+                        variant="contained"
+                        disabled={!meetingCode.trim()}
+                        startIcon={<VideoCallIcon />}
+                        sx={{
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            padding: '12px 24px',
+                            borderRadius: '12px',
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            textTransform: 'none',
+                            '&:hover': {
+                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                transform: 'translateY(-1px)',
+                                boxShadow: '0 8px 25px rgba(102, 126, 234, 0.4)'
+                            },
+                            '&:disabled': {
+                                background: '#e2e8f0',
+                                color: '#a0aec0'
+                            }
+                        }}
+                    >
+                        Join Meeting
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     )
 }
