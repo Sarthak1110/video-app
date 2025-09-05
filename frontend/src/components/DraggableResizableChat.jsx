@@ -12,8 +12,17 @@ const DraggableResizableChat = ({
     onClose, 
     isVisible 
 }) => {
-    const [position, setPosition] = useState({ x: window.innerWidth - 360, y: 20 });
-    const [size, setSize] = useState({ width: 320, height: 400 });
+    // Detect mobile screen
+    const isMobile = window.innerWidth <= 768;
+    
+    const [position, setPosition] = useState({ 
+        x: isMobile ? 10 : window.innerWidth - 360, 
+        y: isMobile ? 10 : 20 
+    });
+    const [size, setSize] = useState({ 
+        width: isMobile ? Math.min(window.innerWidth - 20, 300) : 320, 
+        height: isMobile ? Math.min(window.innerHeight - 140, 350) : 400 
+    });
     const [isDragging, setIsDragging] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -56,6 +65,9 @@ const DraggableResizableChat = ({
     // Resize functionality
     const handleResizeMouseDown = (e) => {
         e.stopPropagation();
+        // Disable resize on mobile for better UX
+        if (window.innerWidth <= 768) return;
+        
         setIsResizing(true);
         setResizeStart({
             x: e.clientX,
@@ -65,13 +77,28 @@ const DraggableResizableChat = ({
         });
     };
 
-    // Handle window resize to keep chat box in bounds
+    // Handle window resize to keep chat box in bounds and adjust for mobile
     useEffect(() => {
         const handleWindowResize = () => {
-            setPosition(prev => ({
-                x: Math.min(prev.x, window.innerWidth - size.width),
-                y: Math.min(prev.y, window.innerHeight - size.height)
-            }));
+            const isMobileNow = window.innerWidth <= 768;
+            
+            // Adjust size for mobile
+            if (isMobileNow) {
+                setSize({
+                    width: Math.min(window.innerWidth - 20, 300),
+                    height: Math.min(window.innerHeight - 140, 350)
+                });
+                setPosition({
+                    x: 10,
+                    y: 10
+                });
+            } else {
+                // Desktop positioning
+                setPosition(prev => ({
+                    x: Math.min(prev.x, window.innerWidth - size.width),
+                    y: Math.min(prev.y, window.innerHeight - size.height)
+                }));
+            }
         };
 
         window.addEventListener('resize', handleWindowResize);
