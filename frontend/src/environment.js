@@ -1,4 +1,4 @@
-let IS_PROD = true;
+let IS_PROD = flase;
 const server = IS_PROD ?
     "http://localhost:8000" :
 
